@@ -10,7 +10,7 @@
 
 # Choose pidents to test over.
 
-pident=("100" "99" "98" "97" "96" "95" "94")
+pident=("100" "99" "98" "97" "96" "94")
 
 # First Run steps 1-12 to generate databases and folders exactly following workflow
 # Note: still gotta do the reformatting on your own (step 0)
@@ -23,7 +23,7 @@ Rscript filter_seqIDs_by_pident.R otus.custom.blast.table.modified ids.above.${p
 Rscript filter_seqIDs_by_pident.R otus.custom.blast.table.modified ids.below.${pident[0]} ${pident[0]} FALSE
 mkdir plots
 RScript plot_blast_hit_stats.R otus.custom.blast.table.modified ${pident[0]} plots
-python find_seqIDs_blast_removed.py otus.fasta otus.custom.blast.table.modified ids.missing
+python find_seqIDs_blast_removed.py otus.fasta otus.custom.blast.table ids.missing
 cat ids.below.${pident[0]} ids.missing > ids.below.${pident[0]}.all
 python create_fastas_given_seqIDs.py ids.above.${pident[0]} otus.fasta otus.above.${pident[0]}.fasta
 python create_fastas_given_seqIDs.py ids.below.${pident[0]}.all otus.fasta otus.below.${pident[0]}.fasta
@@ -42,9 +42,9 @@ sed 's/[[:blank:]]/\;/' <custom.general.taxonomy >custom.general.taxonomy.reform
 mv custom.general.taxonomy.reformatted custom.general.taxonomy
 sed 's/[[:blank:]]/\;/' <custom.taxonomy >custom.custom.taxonomy
 mkdir conflicts_${pident[0]}
-Rscript find_classification_disagreements.R otus.${pident[0]}.taxonomy otus.general.taxonomy ids.above.${pident[0]} conflicts_${pident[0]} ${pident[0]} 85 70
+Rscript find_classification_disagreements.R otus.${pident[0]}.taxonomy otus.general.taxonomy ids.above.${pident[0]} conflicts_${pident[0]} ${pident[0]} 70
 mkdir conflicts_database
-Rscript find_classification_disagreements.R custom.custom.taxonomy custom.general.taxonomy NA conflicts_database NA NA 70 database 
+Rscript find_classification_disagreements.R custom.custom.taxonomy custom.general.taxonomy NA conflicts_database NA 70 database 
 
 # Next Run steps 4-9, the first half of 11, and 12 with different pident cutoffs
 # Define a function called runagain since you repeat this part many times
@@ -62,7 +62,7 @@ runagain () {
    sed 's/[[:blank:]]/\;/' <otus.$1.taxonomy >otus.$1.taxonomy.reformatted
    mv otus.$1.taxonomy.reformatted otus.$1.taxonomy
    mkdir conflicts_$1
-   Rscript find_classification_disagreements.R otus.$1.taxonomy otus.general.taxonomy ids.above.$1 conflicts_$1 $1 85 70
+   Rscript find_classification_disagreements.R otus.$1.taxonomy otus.general.taxonomy ids.above.$1 conflicts_$1 $1 70
 }
 
 # Using function runagain run the additional pidents in paralelle
